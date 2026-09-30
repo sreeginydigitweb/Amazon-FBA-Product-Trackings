@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FBA Selection Tracking</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f4f8;--card:#fff;--ink:#101828;--mut:#667085;--line:#e4e9f0;--head:#0d1b3e;--headink:#fff;--headmut:#a9b6d3;
+--gt:#16794a;--gb:#dcf5e6;--bt:#1b5cc4;--bb:#dde9fc;--ot:#a4560b;--ob:#fdebd3;--rt:#c02626;--rb:#fde0e0;--pt:#6d3fc0;--pb:#ebe1fb;--xt:#475467;--xb:#e9edf2;--gbtn:#15803d;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1220;--card:#131c2e;--ink:#e8edf6;--mut:#94a3b8;--line:#243047;--head:#070d1b;--gt:#5be0a0;--gb:#0f3a26;--bt:#8db8ff;--bb:#14305e;--ot:#fbbf6a;--ob:#42300d;--rt:#ff9090;--rb:#471919;--pt:#c4a6ff;--pb:#2e1f52;--xt:#b6c2d3;--xb:#232f45}}
+:root[data-theme="dark"]{--bg:#0b1220;--card:#131c2e;--ink:#e8edf6;--mut:#94a3b8;--line:#243047;--head:#070d1b;--gt:#5be0a0;--gb:#0f3a26;--bt:#8db8ff;--bb:#14305e;--ot:#fbbf6a;--ob:#42300d;--rt:#ff9090;--rb:#471919;--pt:#c4a6ff;--pb:#2e1f52;--xt:#b6c2d3;--xb:#232f45}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1200px;margin:0 auto;padding:18px 14px 40px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:18px 18px 10px}
+h1{margin:0;font-size:22px;letter-spacing:-.02em}
+.tools{display:flex;gap:10px;flex-wrap:wrap}
+select,input[type=search]{padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit;min-width:150px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;padding:6px 18px 16px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:6px 14px;font:inherit;font-size:13px;font-weight:500;cursor:pointer}
+.chip b{margin-left:4px;font-weight:700}
+.chip[aria-pressed=true]{background:var(--head);color:#fff;border-color:var(--head)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:1080px}
+thead th{background:var(--head);color:var(--headink);padding:12px 12px;font-size:12px;font-weight:700;letter-spacing:.02em;text-align:left;vertical-align:bottom;white-space:nowrap}
+thead th small{display:block;color:var(--headmut);font-weight:500;font-size:10.5px;margin-top:2px}
+th.n,td.n{text-align:right}
+th.c,td.c{text-align:center}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr:hover{background:color-mix(in srgb,var(--bg) 60%,transparent)}
+.pn{font-weight:600}.pa{color:var(--mut);font-size:12px}
+.pill{display:inline-block;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600;white-space:nowrap}
+.g{background:var(--gb);color:var(--gt)}.b{background:var(--bb);color:var(--bt)}.o{background:var(--ob);color:var(--ot)}.r{background:var(--rb);color:var(--rt)}.p{background:var(--pb);color:var(--pt)}.x{background:var(--xb);color:var(--xt)}
+.ok{color:var(--gt)}.bad{color:var(--rt)}
+.marg{font-weight:700}
+.rc{display:inline-flex;gap:5px}
+.ic{width:24px;height:22px;border-radius:5px;display:grid;place-items:center;font-size:12px;font-weight:700}
+.st small{display:block;color:var(--mut);font-size:11.5px;margin-top:4px;max-width:150px;line-height:1.3}
+.btn{font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:7px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;white-space:nowrap}
+.btn.go{background:var(--gbtn);color:#fff;border-color:var(--gbtn)}
+.btn:focus-visible,.chip:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--bt);outline-offset:2px}
+.mut{color:var(--mut);font-size:13px}
+.foot{padding:12px 18px;color:var(--mut);font-size:12px;background:var(--bg);border-top:1px solid var(--line)}
+.empty{padding:28px;text-align:center;color:var(--mut)}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="panel">
+  <div class="top">
+    <h1>FBA Selection Tracking</h1>
+    <div class="tools">
+      <select id="owner" aria-label="Owner"><option value="">All owners</option><option>Dilani</option></select>
+      <input type="search" id="q" placeholder="Search ASIN or product" aria-label="Search">
+    </div>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div class="tw"><table>
+    <thead><tr>
+      <th>ASIN / Product</th>
+      <th class="n">Stock<small>Needs &gt; 20</small></th>
+      <th class="n">Sales<small>Last 30 days, 5+</small></th>
+      <th class="n">Rating<small>4★ or above</small></th>
+      <th class="n">Net margin<small>45% or above</small></th>
+      <th>Size / Weight</th>
+      <th class="c">In FBA</th>
+      <th>Rule check<small>Rating · Sales · Margin · Stock</small></th>
+      <th>FBA status</th>
+      <th>Action</th>
+    </tr></thead>
+    <tbody id="rows"></tbody>
+  </table></div>
+  <div id="empty" class="empty" hidden>No ASINs match this filter.</div>
+  <div class="foot">Step 0 filters out ASINs already in FBA first, then exclusions, rating, sales, margin and stock. Stock at 20 or fewer goes to review. Any other failed rule means do not select.</div>
+</div></div>
+<script>
+var D=[
+ {a:"B0XXXXXXX1",n:"Product A",o:"Dilani",stock:50,sales:8,rate:4.5,m:52,inFba:false,sz:"Verified",ex:""},
+ {a:"B0XXXXXXX2",n:"Product B",o:"Dilani",stock:35,sales:7,rate:4.3,m:48,inFba:true,sz:"Verified",ex:""},
+ {a:"B0XXXXXXX3",n:"Product C",o:"Dilani",stock:15,sales:6,rate:4.2,m:50,inFba:false,sz:"Verified",ex:""},
+ {a:"B0XXXXXXX4",n:"Product D",o:"Dilani",stock:40,sales:2,rate:4.1,m:42,inFba:false,sz:"Verified",ex:""},
+ {a:"B0XXXXXXX5",n:"Product E",o:"Dilani",stock:60,sales:12,rate:4.6,m:55,inFba:false,sz:"Verified",ex:"fragile or crystal"},
+ {a:"B0XXXXXXX6",n:"Product F",o:"Dilani",stock:44,sales:9,rate:3.8,m:51,inFba:false,sz:"Verified",ex:""}
+];
+var F="all",notified={};
+var META={elig:["FBA eligible","g","Passed all four rules"],infba:["Already in FBA","b","No action needed"],review:["Review stock","o","20 units or fewer, restock and re-check"],no:["Not eligible","r",""],avoid:["Avoid","p",""]};
+function judge(d){
+ var chk=[d.rate>=4,d.sales>=5,d.m>=45,d.stock>20],why=[];
+ if(d.inFba)return{k:"infba",chk:null,note:META.infba[2]};
+ if(d.ex)return{k:"avoid",chk:chk,note:"Excluded: "+d.ex};
+ if(!chk[0])why.push("Rating below 4★");
+ if(!chk[1])why.push("Under 5 units in 30 days");
+ if(!chk[2])why.push("Margin below 45%");
+ if(why.length)return{k:"no",chk:chk,note:why.join(", ")};
+ if(!chk[3])return{k:"review",chk:chk,note:META.review[2]};
+ return{k:"elig",chk:chk,note:META.elig[2]};
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function icon(ok,i,k){
+ if(ok===null)return'<span class="ic x">–</span>';
+ if(ok)return'<span class="ic g">✓</span>';
+ return i===3&&k==="review"?'<span class="ic o">!</span>':'<span class="ic r">✕</span>';
+}
+function action(k,i){
+ if(k==="elig")return notified[i]?'<span class="pill g">Notified</span>':'<button class="btn go" data-n="'+i+'">Send notification</button>';
+ if(k==="infba")return'<span class="mut">No action</span>';
+ if(k==="review")return'<button class="btn" data-r="'+i+'">Check stock</button>';
+ return'<span class="mut">Do not send</span>';
+}
+function render(){
+ var ow=document.getElementById("owner").value,q=document.getElementById("q").value.toLowerCase();
+ var cnt={elig:0,review:0,no:0,avoid:0,infba:0},html="",shown=0;
+ D.forEach(function(d,i){
+  var j=judge(d);cnt[j.k]++;
+  if(ow&&d.o!==ow)return;
+  if(q&&(d.a+" "+d.n).toLowerCase().indexOf(q)<0)return;
+  if(F!=="all"&&F!==j.k)return;
+  shown++;
+  var m=META[j.k];
+  var rc=(j.chk||[null,null,null,null]).map(function(c,x){return icon(c,x,j.k)}).join("");
+  html+='<tr><td><div class="pn">'+esc(d.n)+'</div><div class="pa">'+esc(d.a)+'</div></td>'
+   +'<td class="n">'+d.stock+'</td><td class="n">'+d.sales+'</td><td class="n">'+d.rate.toFixed(1)+'★</td>'
+   +'<td class="n marg '+(d.m>=45?"ok":"bad")+'">'+d.m+'%</td>'
+   +'<td><span class="pill g">'+d.sz+'</span></td>'
+   +'<td class="c"><span class="pill '+(d.inFba?"b":"x")+'">'+(d.inFba?"Yes":"No")+'</span></td>'
+   +'<td><span class="rc">'+rc+'</span></td>'
+   +'<td class="st"><span class="pill '+m[1]+'">'+m[0]+'</span><small>'+esc(j.note)+'</small></td>'
+   +'<td>'+action(j.k,i)+'</td></tr>';
+ });
+ document.getElementById("rows").innerHTML=html;
+ document.getElementById("empty").hidden=shown>0;
+ var tabs=[["all","All",D.length],["elig","FBA eligible",cnt.elig],["review","Review stock",cnt.review],["no","Not eligible",cnt.no],["avoid","Avoid",cnt.avoid],["infba","Already in FBA",cnt.infba]];
+ document.getElementById("chips").innerHTML=tabs.map(function(t){return'<button class="chip" data-f="'+t[0]+'" aria-pressed="'+(F===t[0])+'">'+t[1]+'<b>'+t[2]+'</b></button>'}).join("");
+}
+document.addEventListener("click",function(e){
+ var t=e.target.closest("[data-f],[data-n],[data-r]");if(!t)return;
+ if(t.dataset.f){F=t.dataset.f}
+ if(t.dataset.n){notified[t.dataset.n]=true}
+ if(t.dataset.r){var d=D[t.dataset.r];var v=prompt("New stock level for "+d.n+":",d.stock);if(v!==null&&v!==""&&!isNaN(+v))d.stock=+v}
+ render();
+});
+document.getElementById("owner").onchange=render;
+document.getElementById("q").oninput=render;
+render();
+</script>
+</body>
+</html>
